@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "915455425980",
+    "project_id": "minhasfinancasapp-37d3e",
+    "storage_bucket": "minhasfinancasapp-37d3e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:915455425980:android:775af80d71b9b374267fb9",
+        "android_client_info": {
+          "package_name": "com.example.minhas_financas_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmpkkc8wQmIlG7Uyn2GPpmoQ5l0XXeUL4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
