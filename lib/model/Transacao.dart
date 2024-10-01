@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class Transacao {
   final String id;
   final double valor;
@@ -7,6 +5,7 @@ class Transacao {
   final DateTime data;
   final String motivo;
   final String usuarioId;
+  final bool compartilhada;
 
   Transacao({
     required this.id,
@@ -15,11 +14,11 @@ class Transacao {
     required this.data,
     required this.motivo,
     required this.usuarioId,
+    required this.compartilhada,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'valor': valor,
       'tipo': tipo,
       'data': data,
@@ -28,7 +27,7 @@ class Transacao {
     };
   }
 
-  static Transacao fromDoc(QueryDocumentSnapshot<Object?> map) {
+  static Transacao fromMap(Map<String, dynamic> map) {
     return Transacao(
       id: map['id'],
       valor: map['valor'],
@@ -36,6 +35,7 @@ class Transacao {
       data: map['data'].toDate(),
       motivo: map['motivo'],
       usuarioId: map['usuarioId'],
+      compartilhada: map['compartilhada'],
     );
   }
 

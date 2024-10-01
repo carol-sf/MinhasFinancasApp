@@ -135,6 +135,7 @@ class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
                       data: _data,
                       motivo: _motivo,
                       usuarioId: '',
+                      compartilhada: false,
                     );
 
                     widget.onNovaTransacao(novaTransacao);

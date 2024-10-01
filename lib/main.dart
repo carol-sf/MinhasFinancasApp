@@ -53,6 +53,7 @@ class _LoginPageState extends State<LoginPage> {
         data: dataHoje,
         motivo: 'Motivo ${i + 1}',
         usuarioId: '',
+        compartilhada: false,
       ));
     }
 
@@ -66,6 +67,7 @@ class _LoginPageState extends State<LoginPage> {
           data: diaAleatorio,
           motivo: 'Motivo ${i + 4}',
           usuarioId: '',
+          compartilhada: false,
         ));
       }
     }
