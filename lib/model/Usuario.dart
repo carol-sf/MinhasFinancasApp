@@ -27,8 +27,8 @@ class Usuario {
       id: id,
       usuario: map['usuario'],
       senha: map['senha'],
-      creditoTotal: (map['creditoTotal'] as int).toDouble(),
-      debitoTotal: (map['debitoTotal'] as int).toDouble(),
+      creditoTotal: double.parse(map['creditoTotal'].toString()),
+      debitoTotal: double.parse(map['debitoTotal'].toString()),
     );
   }
 

@@ -5,6 +5,7 @@ import 'package:minhas_financas_app/model/Transacao.dart';
 import 'package:minhas_financas_app/model/Usuario.dart';
 import 'package:minhas_financas_app/service/TransacaoService.dart';
 import 'package:minhas_financas_app/service/UsuarioService.dart';
+import 'package:minhas_financas_app/utils/StringExtension.dart';
 
 class RegistroTransacaoScreen extends StatefulWidget {
   final Function(Transacao) onNovaTransacao;
@@ -80,152 +81,203 @@ class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            TextFormField(
-              controller: _valorController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Valor',
-                prefixText: 'R\$ ',
-                border: OutlineInputBorder(),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor, insira um valor.';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16.0),
-            TextFormField(
-              controller: _dataController,
-              decoration: InputDecoration(
-                labelText: 'Data',
-                border: const OutlineInputBorder(),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.calendar_today),
-                  onPressed: () => _selectDate(context),
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _valorController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Valor',
+                  prefixText: 'R\$ ',
+                  border: OutlineInputBorder(),
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, insira um valor.';
+                  }
+                  return null;
+                },
               ),
-              readOnly: true,
-            ),
-            const SizedBox(height: 16.0),
-            DropdownButtonFormField<String>(
-              value: _tipo,
-              decoration: const InputDecoration(
-                labelText: 'Tipo',
-                border: OutlineInputBorder(),
-              ),
-              items: _tiposTransacao.map((tipo) {
-                return DropdownMenuItem(
-                  value: tipo,
-                  child: Text(tipo),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _tipo = value!;
-                });
-              },
-            ),
-            const SizedBox(height: 16.0),
-            DropdownButtonFormField<String>(
-              value: _motivo,
-              decoration: const InputDecoration(
-                labelText: 'Motivo',
-                border: OutlineInputBorder(),
-              ),
-              items: _motivos.map((motivo) {
-                return DropdownMenuItem(
-                  value: motivo,
-                  child: Text(motivo),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _motivo = value!;
-                });
-              },
-            ),
-            const SizedBox(height: 16.0),
-            DropdownButtonFormField<Usuario?>(
-              value: _usuarioSelecionado,
-              decoration: const InputDecoration(
-                labelText: 'Colaborador',
-                border: OutlineInputBorder(),
-              ),
-              items: [
-                const DropdownMenuItem<Usuario?>(
-                  value: null, // Valor nulo para deixar o campo vazio
-                  child: Text(
-                      'Selecione um colaborador'), // Texto exibido quando não há seleção
+              const SizedBox(height: 16.0),
+              TextFormField(
+                controller: _dataController,
+                decoration: InputDecoration(
+                  labelText: 'Data',
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.calendar_today),
+                    onPressed: () => _selectDate(context),
+                  ),
                 ),
-                ..._usuarios.map((usuario) {
+                readOnly: true,
+              ),
+              const SizedBox(height: 16.0),
+              DropdownButtonFormField<String>(
+                value: _tipo,
+                decoration: const InputDecoration(
+                  labelText: 'Tipo',
+                  border: OutlineInputBorder(),
+                ),
+                items: _tiposTransacao.map((tipo) {
                   return DropdownMenuItem(
-                    value: usuario,
-                    child: Text(usuario.usuario),
+                    value: tipo,
+                    child: Text(tipo),
                   );
-                }),
-              ],
-              onChanged: (value) {
-                setState(() {
-                  _usuarioSelecionado = value;
-                });
-              },
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton.icon(
-              onPressed: () {
-                if (_formKey.currentState?.validate() ?? false) {
-                  double valorTransacao = double.parse(_valorController.text);
-                  bool compartilhada = _usuarioSelecionado != null;
-                  if (compartilhada && _tipo == 'Débito') {
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _tipo = value!;
+                  });
+                },
+              ),
+              const SizedBox(height: 16.0),
+              DropdownButtonFormField<String>(
+                value: _motivo,
+                decoration: const InputDecoration(
+                  labelText: 'Motivo',
+                  border: OutlineInputBorder(),
+                ),
+                items: _motivos.map((motivo) {
+                  return DropdownMenuItem(
+                    value: motivo,
+                    child: Text(motivo),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _motivo = value!;
+                  });
+                },
+              ),
+              const SizedBox(height: 16.0),
+              DropdownButtonFormField<Usuario?>(
+                value: _usuarioSelecionado,
+                decoration: const InputDecoration(
+                  labelText: 'Colaborador',
+                  border: OutlineInputBorder(),
+                ),
+                items: [
+                  const DropdownMenuItem<Usuario?>(
+                    value: null, // Valor nulo para deixar o campo vazio
+                    child: Text(
+                        'Selecione um colaborador'), // Texto exibido quando não há seleção
+                  ),
+                  ..._usuarios.map((usuario) {
+                    return DropdownMenuItem(
+                      value: usuario,
+                      child: Text(usuario.usuario),
+                    );
+                  }),
+                ],
+                onChanged: (value) {
+                  if (value != null) {
                     setState(() {
                       _participacao = transacaoService.calcularParticipacao(
-                        valorTransacao,
+                        double.parse(_valorController.text),
                         widget.usuario,
-                        _usuarioSelecionado!,
+                        value,
                       );
                     });
-                    valorTransacao = _participacao!.parteUsuario;
-                    final transacaoColaborador = Transacao(
-                      valor: _participacao!.parteColaborador,
+                  }
+                  setState(() {
+                    _usuarioSelecionado = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 16.0),
+              if (_usuarioSelecionado != null && _participacao != null)
+                Row(
+                  children: [
+                    Flexible(
+                      flex: 1,
+                      child: Card(
+                        elevation: 4.0,
+                        child: ListTile(
+                          title: const Text(
+                            'Minha Parte',
+                            textAlign: TextAlign.center,
+                          ),
+                          subtitle: Text(
+                            _participacao!.parteUsuario.toString().toFormattedBrlCurrency(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 1,
+                      child: Card(
+                        elevation: 4.0,
+                        child: ListTile(
+                          title: Text(
+                            _usuarioSelecionado!.usuario,
+                            textAlign: TextAlign.center,
+                          ),
+                          subtitle: Text(
+                            _participacao!.parteColaborador.toString().toFormattedBrlCurrency(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              const SizedBox(height: 16.0),
+              ElevatedButton.icon(
+                onPressed: () {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    double valorTransacao = double.parse(_valorController.text);
+                    bool compartilhada = _usuarioSelecionado != null;
+                    if (compartilhada && _tipo == 'Débito' && _participacao != null) {
+                      valorTransacao = _participacao!.parteUsuario;
+                      final transacaoColaborador = Transacao(
+                        valor: _participacao!.parteColaborador,
+                        tipo: _tipo,
+                        data: _data,
+                        motivo: _motivo,
+                        usuarioId: _usuarioSelecionado!.id,
+                        compartilhada: compartilhada,
+                      );
+                      transacaoService.registrar(transacaoColaborador);
+                    }
+                    final transacaoUsuario = Transacao(
+                      valor: valorTransacao,
                       tipo: _tipo,
                       data: _data,
                       motivo: _motivo,
-                      usuarioId: _usuarioSelecionado!.id,
+                      usuarioId: widget.usuario.id,
                       compartilhada: compartilhada,
                     );
-                    transacaoService.registrar(transacaoColaborador);
-                  }
-                  final transacaoUsuario = Transacao(
-                    valor: valorTransacao,
-                    tipo: _tipo,
-                    data: _data,
-                    motivo: _motivo,
-                    usuarioId: widget.usuario.id,
-                    compartilhada: compartilhada,
-                  );
-                  transacaoService.registrar(transacaoUsuario);
+                    transacaoService.registrar(transacaoUsuario);
 
-                  _mostrarMensagemSucesso(transacaoUsuario);
-                  _limparFormulario();
-                }
-              },
-              icon: const Icon(Icons.save),
-              label: const Text('Salvar'),
-              style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                textStyle: const TextStyle(fontSize: 18),
+                    _mostrarMensagemSucesso(transacaoUsuario);
+                    _limparFormulario();
+                  }
+                },
+                icon: const Icon(Icons.save),
+                label: const Text('Salvar'),
+                style: ElevatedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  textStyle: const TextStyle(fontSize: 18),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -251,6 +303,7 @@ class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
       _valorController.clear();
       _tipo = 'Crédito';
       _motivo = 'Água';
+      _usuarioSelecionado = null;
     });
   }
 }
