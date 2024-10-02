@@ -14,8 +14,12 @@ class AuthenticationHelper {
       );
       return null;
     } on FirebaseAuthException catch (e) {
+      print(e);
       return e.message;
+    } catch (e) {
+      print('Erro inesperado ao tentar cadastrar usuário: $e');
     }
+    return null;
   }
 
   Future<String?> signIn(

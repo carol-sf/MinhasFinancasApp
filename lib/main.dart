@@ -2,8 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:minhas_financas_app/firebase_options.dart';
 import 'package:minhas_financas_app/model/DadosLogin.dart';
-import 'package:minhas_financas_app/model/Transacao.dart';
 import 'package:minhas_financas_app/service/AuthenticationHelper.dart';
+import 'package:minhas_financas_app/view/Cadastro.dart';
 import 'package:minhas_financas_app/view/TelaPrincipal.dart';
 
 void main() async {
@@ -22,7 +22,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Controle Financeiro',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 88, 13, 219)),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 88, 13, 219)),
         useMaterial3: true,
       ),
       home: const LoginPage(),
@@ -40,41 +41,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final DadosLogin _dadosLogin = DadosLogin();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  List<Transacao> gerarTransacoes() {
-    final List<Transacao> transacoes = [];
-    final agora = DateTime.now();
-    final dataHoje = DateTime(agora.year, agora.month, agora.day);
-
-    for (int i = 0; i < 3; i++) {
-      transacoes.add(Transacao(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        valor: (100 + i * 10).toDouble(),
-        tipo: i % 2 == 0 ? 'Crédito' : 'Débito',
-        data: dataHoje,
-        motivo: 'Motivo ${i + 1}',
-        usuarioId: '',
-        compartilhada: false,
-      ));
-    }
-
-    for (int i = 0; i < 10; i++) {
-      final diaAleatorio = DateTime(agora.year, agora.month, i + 1);
-      if (diaAleatorio.isBefore(dataHoje)) {
-        transacoes.add(Transacao(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          valor: (100 + i * 10).toDouble(),
-          tipo: i % 2 == 0 ? 'Crédito' : 'Débito',
-          data: diaAleatorio,
-          motivo: 'Motivo ${i + 4}',
-          usuarioId: '',
-          compartilhada: false,
-        ));
-      }
-    }
-
-    return transacoes;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,11 +126,13 @@ class _LoginPageState extends State<LoginPage> {
                     _formKey.currentState!.save();
 
                     AuthenticationHelper()
-                        .signIn(email: _dadosLogin.email, password: _dadosLogin.senha)
+                        .signIn(
+                            email: _dadosLogin.email,
+                            password: _dadosLogin.senha)
                         .then((result) {
-                          print(result);
+                      print(result);
                       if (result == null) {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const TelaPrincipal()));
@@ -179,7 +147,16 @@ class _LoginPageState extends State<LoginPage> {
                     });
                   }
                 },
-              )
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const CadastroScreen()));
+                },
+                child: const Text('Não tenho uma conta.'),
+              ),
             ],
           ),
         ),
@@ -187,4 +164,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
