@@ -39,13 +39,15 @@ class TransacaoService {
 
   Future<RelatorioTransacoes> listarPorUsuarioEData(
       String usuarioId, DateTime data) async {
-    QuerySnapshot querySnapshot;
+    DateTime inicioDoDia = DateTime(data.year, data.month, data.day, 0, 0, 0);
+    DateTime fimDoDia = DateTime(data.year, data.month, data.day, 23, 59, 59, 999);
     List<Transacao> transacoes = [];
 
-    querySnapshot = await db
+    QuerySnapshot querySnapshot = await db
         .collection('transacoes')
         .where('usuarioId', isEqualTo: usuarioId)
-        .where('data', isEqualTo: Timestamp.fromDate(data))
+        .where('data', isGreaterThanOrEqualTo: Timestamp.fromDate(inicioDoDia))
+        .where('data', isLessThan: Timestamp.fromDate(fimDoDia))
         .get();
 
     if (querySnapshot.docs.isNotEmpty) {

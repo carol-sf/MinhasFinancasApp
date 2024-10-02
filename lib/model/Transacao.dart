@@ -35,7 +35,7 @@ class Transacao {
       data: map['data'].toDate(),
       motivo: map['motivo'],
       usuarioId: map['usuarioId'],
-      compartilhada: map['compartilhada'],
+      compartilhada: map['compartilhada'] ?? false,
     );
   }
 

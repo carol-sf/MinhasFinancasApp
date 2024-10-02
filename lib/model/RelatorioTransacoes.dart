@@ -11,4 +11,9 @@ class RelatorioTransacoes {
     required this.creditoTotal,
     required this.debitoTotal,
   });
+
+  @override
+  String toString() {
+    return 'RelatorioTransacoes{transacoes: $transacoes, creditoTotal: $creditoTotal, debitoTotal: $debitoTotal}';
+  }
 }

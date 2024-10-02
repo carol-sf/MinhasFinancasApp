@@ -52,7 +52,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
         ),
         body: TabBarView(
           children: [
-            ResumoTransacoesScreen(transacoes: widget.transacoes),
+            ResumoTransacoesScreen(usuario: usuario, transacoes: widget.transacoes),
             RegistroTransacaoScreen(
                 usuario: usuario, onNovaTransacao: _adicionarTransacao),
             FiltroTransacoesScreen(transacoes: widget.transacoes),

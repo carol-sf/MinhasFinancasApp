@@ -1,19 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:minhas_financas_app/model/Transacao.dart';
+import 'package:minhas_financas_app/model/Usuario.dart';
+import 'package:minhas_financas_app/service/TransacaoService.dart';
+import 'package:minhas_financas_app/service/UsuarioService.dart';
 
-class ResumoTransacoesScreen extends StatelessWidget {
+class ResumoTransacoesScreen extends StatefulWidget {
   final List<Transacao> transacoes;
+  final Usuario usuario;
 
-  const ResumoTransacoesScreen({super.key, required this.transacoes});
+  const ResumoTransacoesScreen({super.key, required this.transacoes, required this.usuario});
+
+  @override
+  State<ResumoTransacoesScreen> createState() => _ResumoTransacoesScreenState();
+}
+
+class _ResumoTransacoesScreenState extends State<ResumoTransacoesScreen> {
+  final TransacaoService transacaoService = TransacaoService();
+  final UsuarioService usuarioService = UsuarioService();
+  final DateTime hoje = DateTime.now();
+  List<Transacao> transacoesHoje = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarTransacoes();
+  }
+
+  _carregarTransacoes() {
+    transacaoService.listarPorUsuarioEData(widget.usuario.id, hoje).then((relatorio) {
+      setState(() {
+        transacoesHoje = relatorio.transacoes;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final hoje = DateTime.now();
-    final transacoesHoje = transacoes.where((t) => t.data.year == hoje.year && t.data.month == hoje.month && t.data.day == hoje.day).toList();
-    final totalCredito = transacoes.where((t) => t.tipo == 'Crédito').fold(0.0, (sum, t) => sum + t.valor);
-    final totalDebito = transacoes.where((t) => t.tipo == 'Débito').fold(0.0, (sum, t) => sum + t.valor);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -34,7 +57,7 @@ class ResumoTransacoesScreen extends StatelessWidget {
             Center(
               child: ElevatedButton.icon(
                 onPressed: () {},
-                icon:const Icon(Icons.calendar_today),
+                icon: const Icon(Icons.calendar_today),
                 label: Text(
                   'Transações do dia ${DateFormat('dd/MM/yyyy').format(hoje)}',
                 ),
@@ -59,9 +82,7 @@ class ResumoTransacoesScreen extends StatelessWidget {
                         transacao.tipo == 'Crédito'
                             ? Icons.arrow_downward
                             : Icons.arrow_upward,
-                        color: transacao.tipo == 'Crédito'
-                            ? Colors.green
-                            : Colors.red,
+                        color: transacao.tipo == 'Crédito' ? Colors.green : Colors.red,
                       ),
                       title: Text(
                         '${transacao.motivo} - R\$ ${transacao.valor.toStringAsFixed(2)}',
@@ -80,7 +101,7 @@ class ResumoTransacoesScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20.0),
             Text(
-              'Total Crédito: R\$ ${totalCredito.toStringAsFixed(2)}',
+              'Total Crédito: R\$ ${widget.usuario.creditoTotal.toStringAsFixed(2)}',
               style: const TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
@@ -88,7 +109,7 @@ class ResumoTransacoesScreen extends StatelessWidget {
               ),
             ),
             Text(
-              'Total Débito: R\$ ${totalDebito.toStringAsFixed(2)}',
+              'Total Débito: R\$ ${widget.usuario.debitoTotal.toStringAsFixed(2)}',
               style: const TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
