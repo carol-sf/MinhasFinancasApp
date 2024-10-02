@@ -30,9 +30,14 @@ class Usuario {
       id: id,
       usuario: map['usuario'],
       senha: map['senha'],
-      creditoTotal: (map['creditoTotal'] ?? 0) as double,
-      debitoTotal: (map['debitoTotal'] ?? 0) as double,
+      creditoTotal: (map['creditoTotal'] as int).toDouble(),
+      debitoTotal: (map['debitoTotal'] as int).toDouble(),
       colaboradorId: map['colaboradorId'],
     );
+  }
+
+  @override
+  String toString() {
+    return 'Usuario{id: $id, usuario: $usuario, senha: $senha, creditoTotal: $creditoTotal, debitoTotal: $debitoTotal, colaboradorId: $colaboradorId}';
   }
 }

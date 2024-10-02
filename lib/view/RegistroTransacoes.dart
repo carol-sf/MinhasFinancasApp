@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:minhas_financas_app/model/Transacao.dart';
+import 'package:minhas_financas_app/model/Usuario.dart';
+import 'package:minhas_financas_app/service/UsuarioService.dart';
 
 class RegistroTransacaoScreen extends StatefulWidget {
   final Function(Transacao) onNovaTransacao;
@@ -12,12 +14,15 @@ class RegistroTransacaoScreen extends StatefulWidget {
 }
 
 class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
+  final UsuarioService usuarioService = UsuarioService();
   final _formKey = GlobalKey<FormState>();
   final _valorController = TextEditingController();
   final _dataController = TextEditingController();
   DateTime _data = DateTime.now();
   String _tipo = 'Crédito';
   String _motivo = 'Água';
+  List<Usuario> _usuarios = [];
+  Usuario? _usuarioSelecionado;
 
   final List<String> _tiposTransacao = ['Crédito', 'Débito'];
   final List<String> _motivos = ['Água', 'Luz', 'Internet', 'Lazer', 'Alimentação', 'Outros'];
@@ -26,6 +31,7 @@ class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
   void initState() {
     super.initState();
     _dataController.text = DateFormat('dd/MM/yyyy').format(_data);
+    _carregarUsuarios();
   }
 
   @override
@@ -33,6 +39,13 @@ class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
     _valorController.dispose();
     _dataController.dispose();
     super.dispose();
+  }
+
+  _carregarUsuarios() async {
+    var usuarios = await usuarioService.buscarTodos() ?? [];
+    setState(() {
+      _usuarios = usuarios;
+    });
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -121,6 +134,31 @@ class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
               onChanged: (value) {
                 setState(() {
                   _motivo = value!;
+                });
+              },
+            ),
+            const SizedBox(height: 16.0),
+            DropdownButtonFormField<Usuario?>(
+              value: _usuarioSelecionado,
+              decoration: const InputDecoration(
+                labelText: 'Colaborador',
+                border: OutlineInputBorder(),
+              ),
+              items: [
+                const DropdownMenuItem<Usuario?>(
+                  value: null, // Valor nulo para deixar o campo vazio
+                  child: Text('Selecione um colaborador'), // Texto exibido quando não há seleção
+                ),
+                ..._usuarios.map((usuario) {
+                  return DropdownMenuItem(
+                    value: usuario,
+                    child: Text(usuario.usuario),
+                  );
+                }),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _usuarioSelecionado = value;
                 });
               },
             ),
