@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:minhas_financas_app/model/Participacao.dart';
 import 'package:minhas_financas_app/model/Transacao.dart';
 import 'package:minhas_financas_app/model/Usuario.dart';
+import 'package:minhas_financas_app/service/TransacaoService.dart';
 import 'package:minhas_financas_app/service/UsuarioService.dart';
 
 class RegistroTransacaoScreen extends StatefulWidget {
   final Function(Transacao) onNovaTransacao;
+  final Usuario usuario;
 
-  const RegistroTransacaoScreen({super.key, required this.onNovaTransacao});
+  const RegistroTransacaoScreen(
+      {super.key, required this.onNovaTransacao, required this.usuario});
 
   @override
-  _RegistroTransacaoScreenState createState() => _RegistroTransacaoScreenState();
+  _RegistroTransacaoScreenState createState() =>
+      _RegistroTransacaoScreenState();
 }
 
 class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
   final UsuarioService usuarioService = UsuarioService();
+  final TransacaoService transacaoService = TransacaoService();
+
   final _formKey = GlobalKey<FormState>();
   final _valorController = TextEditingController();
   final _dataController = TextEditingController();
@@ -23,9 +30,17 @@ class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
   String _motivo = 'Água';
   List<Usuario> _usuarios = [];
   Usuario? _usuarioSelecionado;
+  Participacao? _participacao;
 
   final List<String> _tiposTransacao = ['Crédito', 'Débito'];
-  final List<String> _motivos = ['Água', 'Luz', 'Internet', 'Lazer', 'Alimentação', 'Outros'];
+  final List<String> _motivos = [
+    'Água',
+    'Luz',
+    'Internet',
+    'Lazer',
+    'Alimentação',
+    'Outros'
+  ];
 
   @override
   void initState() {
@@ -44,7 +59,7 @@ class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
   _carregarUsuarios() async {
     var usuarios = await usuarioService.buscarTodos() ?? [];
     setState(() {
-      _usuarios = usuarios;
+      _usuarios = usuarios.where((u) => u.id != widget.usuario.id).toList();
     });
   }
 
@@ -147,7 +162,8 @@ class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
               items: [
                 const DropdownMenuItem<Usuario?>(
                   value: null, // Valor nulo para deixar o campo vazio
-                  child: Text('Selecione um colaborador'), // Texto exibido quando não há seleção
+                  child: Text(
+                      'Selecione um colaborador'), // Texto exibido quando não há seleção
                 ),
                 ..._usuarios.map((usuario) {
                   return DropdownMenuItem(
@@ -164,53 +180,77 @@ class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
             ),
             const SizedBox(height: 16.0),
             ElevatedButton.icon(
-                onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    final novaTransacao = Transacao(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      valor: double.parse(_valorController.text),
+              onPressed: () {
+                if (_formKey.currentState?.validate() ?? false) {
+                  double valorTransacao = double.parse(_valorController.text);
+                  bool compartilhada = _usuarioSelecionado != null;
+                  if (compartilhada && _tipo == 'Débito') {
+                    setState(() {
+                      _participacao = transacaoService.calcularParticipacao(
+                        valorTransacao,
+                        widget.usuario,
+                        _usuarioSelecionado!,
+                      );
+                    });
+                    valorTransacao = _participacao!.parteUsuario;
+                    final transacaoColaborador = Transacao(
+                      valor: _participacao!.parteColaborador,
                       tipo: _tipo,
                       data: _data,
                       motivo: _motivo,
-                      usuarioId: '',
-                      compartilhada: false,
+                      usuarioId: _usuarioSelecionado!.id,
+                      compartilhada: compartilhada,
                     );
-
-                    widget.onNovaTransacao(novaTransacao);
-
-                    final snackBar = SnackBar(
-                      content: Text(
-                        'A transação número ${novaTransacao.id}, no valor de R\$${novaTransacao.valor} foi salva com sucesso!',
-                      ),
-                      duration: const Duration(seconds: 2),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-                    _formKey.currentState?.reset();
-                    _valorController.clear();
-
-                    setState(() {
-                      _formKey.currentState?.reset();
-                      _data = DateTime.now();
-                      _dataController.text = DateFormat('dd/MM/yyyy').format(_data);
-                      _valorController.clear();
-                      _tipo = 'Crédito';
-                      _motivo = 'Água';
-                    });
-
-                    print('Transação registrada: $novaTransacao');
+                    transacaoService.registrar(transacaoColaborador);
                   }
-                },
-                icon: const Icon(Icons.save),
-                label: const Text('Salvar'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  textStyle: const TextStyle(fontSize: 18),
-                ),
+                  final transacaoUsuario = Transacao(
+                    valor: valorTransacao,
+                    tipo: _tipo,
+                    data: _data,
+                    motivo: _motivo,
+                    usuarioId: widget.usuario.id,
+                    compartilhada: compartilhada,
+                  );
+                  transacaoService.registrar(transacaoUsuario);
+
+                  _mostrarMensagemSucesso(transacaoUsuario);
+                  _limparFormulario();
+                }
+              },
+              icon: const Icon(Icons.save),
+              label: const Text('Salvar'),
+              style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                textStyle: const TextStyle(fontSize: 18),
               ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  _mostrarMensagemSucesso(Transacao transacao) {
+    final snackBar = SnackBar(
+      content: Text(
+        'A transação número ${transacao.id}, no valor de R\$${transacao.valor} foi salva com sucesso!',
+      ),
+      duration: const Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  _limparFormulario() {
+    _formKey.currentState?.reset();
+    _valorController.clear();
+    setState(() {
+      _formKey.currentState?.reset();
+      _data = DateTime.now();
+      _dataController.text = DateFormat('dd/MM/yyyy').format(_data);
+      _valorController.clear();
+      _tipo = 'Crédito';
+      _motivo = 'Água';
+    });
   }
 }

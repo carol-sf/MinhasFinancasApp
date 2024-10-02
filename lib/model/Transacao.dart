@@ -1,5 +1,5 @@
 class Transacao {
-  final String id;
+  String? id;
   final double valor;
   final String tipo;
   final DateTime data;
@@ -8,7 +8,7 @@ class Transacao {
   final bool compartilhada;
 
   Transacao({
-    required this.id,
+    this.id,
     required this.valor,
     required this.tipo,
     required this.data,

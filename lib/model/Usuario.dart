@@ -4,7 +4,6 @@ class Usuario {
   final String senha;
   final double creditoTotal;
   final double debitoTotal;
-  String? colaboradorId;
 
   Usuario({
     required this.id,
@@ -12,7 +11,6 @@ class Usuario {
     required this.senha,
     this.creditoTotal = 0,
     this.debitoTotal = 0,
-    this.colaboradorId,
   });
 
   Map<String, dynamic> toMap() {
@@ -21,7 +19,6 @@ class Usuario {
       'senha': senha,
       'creditoTotal': creditoTotal,
       'debitoTotal': creditoTotal,
-      'colaboradorId': colaboradorId,
     };
   }
 
@@ -32,12 +29,11 @@ class Usuario {
       senha: map['senha'],
       creditoTotal: (map['creditoTotal'] as int).toDouble(),
       debitoTotal: (map['debitoTotal'] as int).toDouble(),
-      colaboradorId: map['colaboradorId'],
     );
   }
 
   @override
   String toString() {
-    return 'Usuario{id: $id, usuario: $usuario, senha: $senha, creditoTotal: $creditoTotal, debitoTotal: $debitoTotal, colaboradorId: $colaboradorId}';
+    return 'Usuario{id: $id, usuario: $usuario, senha: $senha, creditoTotal: $creditoTotal, debitoTotal: $debitoTotal}';
   }
 }

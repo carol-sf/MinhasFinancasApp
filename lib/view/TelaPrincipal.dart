@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minhas_financas_app/model/Transacao.dart';
+import 'package:minhas_financas_app/model/Usuario.dart';
 import 'package:minhas_financas_app/view/FiltroTransacoes.dart';
 import 'package:minhas_financas_app/view/RegistroTransacoes.dart';
 import 'package:minhas_financas_app/view/ResumoTransacoes.dart';
@@ -14,6 +15,20 @@ class TelaPrincipal extends StatefulWidget {
 }
 
 class _TelaPrincipalState extends State<TelaPrincipal> {
+  late Usuario usuario;
+
+  @override
+  void initState() {
+    super.initState();
+    usuario = Usuario(
+      id: 'CuT3GhBXziCZ1hbmeNwa',
+      usuario: 'Anna Carolina',
+      senha: '123',
+      creditoTotal: 2000,
+      debitoTotal: 0,
+    );
+  }
+
   void _adicionarTransacao(Transacao transacao) {
     setState(() {
       widget.transacoes.add(transacao);
@@ -37,9 +52,10 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
         ),
         body: TabBarView(
           children: [
-            ResumoTransacoesScreen(transacoes: widget.transacoes),  
-            RegistroTransacaoScreen(onNovaTransacao: _adicionarTransacao),  
-            FiltroTransacoesScreen(transacoes: widget.transacoes),  
+            ResumoTransacoesScreen(transacoes: widget.transacoes),
+            RegistroTransacaoScreen(
+                usuario: usuario, onNovaTransacao: _adicionarTransacao),
+            FiltroTransacoesScreen(transacoes: widget.transacoes),
           ],
         ),
       ),
