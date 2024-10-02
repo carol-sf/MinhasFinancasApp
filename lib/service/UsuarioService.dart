@@ -15,6 +15,27 @@ class UsuarioService {
     }
   }
 
+  Future<bool> atualizarSaldo(String id, double valor, String tipoTransacao) async {
+    try {
+      DocumentSnapshot usuarioSnapshot = await colecaoUsuarios.doc(id).get();
+      if(usuarioSnapshot.exists) {
+        if(tipoTransacao == 'Crédito') {
+          var creditoAtual = double.parse(usuarioSnapshot['creditoTotal'].toString());
+          colecaoUsuarios.doc(id).update({'creditoTotal': creditoAtual + valor});
+          return true;
+        } else if(tipoTransacao == 'Débito') {
+          var debitoAtual = double.parse(usuarioSnapshot['debitoTotal'].toString());
+          colecaoUsuarios.doc(id).update({'debitoTotal': debitoAtual + valor});
+          return true;
+        }
+      }
+      return false;
+    } catch(e) {
+      print('Erro ao adicionar credito ou debito: $e');
+      return false;
+    }
+  }
+
   adicionarColaborador(String id, String colaboradorId) {
     try {
       colecaoUsuarios.doc(id).update({'colaboradorId': colaboradorId});

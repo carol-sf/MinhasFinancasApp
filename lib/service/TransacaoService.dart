@@ -3,6 +3,7 @@ import 'package:minhas_financas_app/model/Participacao.dart';
 import 'package:minhas_financas_app/model/RelatorioTransacoes.dart';
 import 'package:minhas_financas_app/model/Transacao.dart';
 import 'package:minhas_financas_app/model/Usuario.dart';
+import 'package:minhas_financas_app/service/UsuarioService.dart';
 
 class TransacaoService {
   FirebaseFirestore db = FirebaseFirestore.instance;
@@ -23,9 +24,14 @@ class TransacaoService {
     );
   }
 
-  registrar(Transacao transacao) {
+  registrar(Transacao transacao) async {
     try {
-      db.collection('transacoes').add(transacao.toMap());
+      UsuarioService usuarioService = UsuarioService();
+      if(await usuarioService.atualizarSaldo(transacao.usuarioId, transacao.valor, transacao.tipo)) {
+        await db.collection('transacoes').add(transacao.toMap());
+      } else {
+        print('Transação não realizada. Erro ao atualizar saldo do usuário.');
+      }
     } catch (e) {
       print('Erro ao registrar transação: $e');
     }
