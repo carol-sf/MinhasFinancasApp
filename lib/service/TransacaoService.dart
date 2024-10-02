@@ -1,19 +1,38 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:minhas_financas_app/model/Participacao.dart';
 import 'package:minhas_financas_app/model/RelatorioTransacoes.dart';
 import 'package:minhas_financas_app/model/Transacao.dart';
+import 'package:minhas_financas_app/model/Usuario.dart';
 
 class TransacaoService {
   FirebaseFirestore db = FirebaseFirestore.instance;
 
+  Participacao calcularParticipacao(double valorTotal, Usuario usuario, Usuario colaborador) {
+    double somaSalarios = usuario.creditoTotal + colaborador.creditoTotal;
+    double porcentagemUsuario = usuario.creditoTotal / somaSalarios;
+    double parteUsuario = valorTotal * porcentagemUsuario;
+    double parteColaborador = valorTotal - parteUsuario;
+
+    return Participacao(
+      idUsuario: usuario.id,
+      nomeUsuario: usuario.usuario,
+      parteUsuario: parteUsuario,
+      idColaborador: colaborador.id,
+      nomeColaborador: colaborador.usuario,
+      parteColaborador: parteColaborador,
+    );
+  }
+
   registrar(Transacao transacao) {
     try {
       db.collection('transacoes').add(transacao.toMap());
-    } catch(e) {
+    } catch (e) {
       print('Erro ao registrar transação: $e');
     }
   }
 
-  Future<RelatorioTransacoes> listarPorUsuarioEData(String usuarioId, DateTime data) async {
+  Future<RelatorioTransacoes> listarPorUsuarioEData(
+      String usuarioId, DateTime data) async {
     QuerySnapshot querySnapshot;
     List<Transacao> transacoes = [];
 
@@ -25,10 +44,11 @@ class TransacaoService {
 
     if (querySnapshot.docs.isNotEmpty) {
       for (var docRef in querySnapshot.docs.toList()) {
-        transacoes.add(Transacao.fromMap(docRef.data() as Map<String, dynamic>));
+        transacoes
+            .add(Transacao.fromMap(docRef.data() as Map<String, dynamic>));
       }
     }
-  
+
     final creditoTotal = transacoes
         .where((transacao) => transacao.tipo == 'Crédito')
         .fold(0.0, (sum, transacao) => sum + transacao.valor);
