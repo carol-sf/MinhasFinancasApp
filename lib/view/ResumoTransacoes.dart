@@ -5,10 +5,9 @@ import 'package:minhas_financas_app/model/Usuario.dart';
 import 'package:minhas_financas_app/service/TransacaoService.dart';
 
 class ResumoTransacoesScreen extends StatefulWidget {
-  final List<Transacao> transacoes;
   final Usuario usuario;
 
-  const ResumoTransacoesScreen({super.key, required this.transacoes, required this.usuario});
+  const ResumoTransacoesScreen({super.key, required this.usuario});
 
   @override
   State<ResumoTransacoesScreen> createState() => _ResumoTransacoesScreenState();

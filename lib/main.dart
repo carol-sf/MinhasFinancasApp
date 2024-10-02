@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:minhas_financas_app/firebase_options.dart';
 import 'package:minhas_financas_app/model/DadosLogin.dart';
 import 'package:minhas_financas_app/model/Transacao.dart';
+import 'package:minhas_financas_app/service/AuthenticationHelper.dart';
 import 'package:minhas_financas_app/view/TelaPrincipal.dart';
 
 void main() async {
@@ -115,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                   return null;
                 },
                 onSaved: (String? inValue) {
-                  _dadosLogin.usuario = inValue!;
+                  _dadosLogin.email = inValue!;
                 },
                 decoration: const InputDecoration(
                   hintText: "Nome de usuário",
@@ -127,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
               TextFormField(
                 obscureText: true,
                 validator: (String? inValue) {
-                  if (inValue!.isEmpty || inValue != '123') {
+                  if (inValue!.isEmpty) {
                     return "A senha informada não é válida";
                   }
                   return null;
@@ -157,22 +158,24 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    final transacoes = gerarTransacoes();
 
-                    // Exibir mensagem de boas-vindas
-                    final snackBar = SnackBar(
-                      content: Text('Bem-vindo, ${_dadosLogin.usuario}!'),
-                      duration: const Duration(seconds: 2),
-                    );
-
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-                    // chamando telaPrincipal
-                    Future.delayed(const Duration(seconds: 2), () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => TelaPrincipal(transacoes: transacoes)),
-                      );
+                    AuthenticationHelper()
+                        .signIn(email: _dadosLogin.email, password: _dadosLogin.senha)
+                        .then((result) {
+                          print(result);
+                      if (result == null) {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const TelaPrincipal()));
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                            AuthenticationHelper().traduzirRetorno(result),
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ));
+                      }
                     });
                   }
                 },

@@ -16,10 +16,10 @@ class TransacaoService {
 
     return Participacao(
       idUsuario: usuario.id,
-      nomeUsuario: usuario.usuario,
+      nomeUsuario: usuario.email,
       parteUsuario: parteUsuario,
       idColaborador: colaborador.id,
-      nomeColaborador: colaborador.usuario,
+      nomeColaborador: colaborador.email,
       parteColaborador: parteColaborador,
     );
   }

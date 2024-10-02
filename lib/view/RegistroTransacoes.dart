@@ -8,11 +8,10 @@ import 'package:minhas_financas_app/service/UsuarioService.dart';
 import 'package:minhas_financas_app/utils/StringExtension.dart';
 
 class RegistroTransacaoScreen extends StatefulWidget {
-  final Function(Transacao) onNovaTransacao;
   final Usuario usuario;
 
   const RegistroTransacaoScreen(
-      {super.key, required this.onNovaTransacao, required this.usuario});
+      {super.key, required this.usuario});
 
   @override
   _RegistroTransacaoScreenState createState() =>
@@ -171,7 +170,7 @@ class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
                   ..._usuarios.map((usuario) {
                     return DropdownMenuItem(
                       value: usuario,
-                      child: Text(usuario.usuario),
+                      child: Text(usuario.email),
                     );
                   }),
                 ],
@@ -220,7 +219,7 @@ class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
                         elevation: 4.0,
                         child: ListTile(
                           title: Text(
-                            _usuarioSelecionado!.usuario,
+                            _usuarioSelecionado!.email,
                             textAlign: TextAlign.center,
                           ),
                           subtitle: Text(

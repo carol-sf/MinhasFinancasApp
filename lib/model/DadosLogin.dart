@@ -1,4 +1,4 @@
 class DadosLogin {
-  String usuario = "";
+  String email = "";
   String senha = "";
 }

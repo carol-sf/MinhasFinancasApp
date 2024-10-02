@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:minhas_financas_app/model/RelatorioTransacoes.dart';
-import 'package:minhas_financas_app/model/Transacao.dart';
 import 'package:minhas_financas_app/model/Usuario.dart';
 import 'package:minhas_financas_app/service/TransacaoService.dart';
 import 'package:minhas_financas_app/utils/StringExtension.dart';
 
 class FiltroTransacoesScreen extends StatefulWidget {
-  final List<Transacao> transacoes;
   final Usuario usuario;
 
-  FiltroTransacoesScreen({required this.transacoes, required this.usuario});
+  FiltroTransacoesScreen({required this.usuario});
 
   @override
   _FiltroTransacoesScreenState createState() => _FiltroTransacoesScreenState();

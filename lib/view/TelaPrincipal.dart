@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:minhas_financas_app/model/Transacao.dart';
 import 'package:minhas_financas_app/model/Usuario.dart';
 import 'package:minhas_financas_app/view/FiltroTransacoes.dart';
 import 'package:minhas_financas_app/view/RegistroTransacoes.dart';
 import 'package:minhas_financas_app/view/ResumoTransacoes.dart';
 
 class TelaPrincipal extends StatefulWidget {
-  final List<Transacao> transacoes;
 
-  const TelaPrincipal({Key? key, required this.transacoes}) : super(key: key);
+  const TelaPrincipal({Key? key}) : super(key: key);
 
   @override
   _TelaPrincipalState createState() => _TelaPrincipalState();
@@ -22,17 +20,11 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
     super.initState();
     usuario = Usuario(
       id: 'CuT3GhBXziCZ1hbmeNwa',
-      usuario: 'Anna Carolina',
+      email: 'Anna Carolina',
       senha: '123',
       creditoTotal: 2000,
       debitoTotal: 0,
     );
-  }
-
-  void _adicionarTransacao(Transacao transacao) {
-    setState(() {
-      widget.transacoes.add(transacao);
-    });
   }
 
   @override
@@ -52,10 +44,10 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
         ),
         body: TabBarView(
           children: [
-            ResumoTransacoesScreen(usuario: usuario, transacoes: widget.transacoes),
+            ResumoTransacoesScreen(usuario: usuario),
             RegistroTransacaoScreen(
-                usuario: usuario, onNovaTransacao: _adicionarTransacao),
-            FiltroTransacoesScreen(usuario: usuario, transacoes: widget.transacoes),
+                usuario: usuario),
+            FiltroTransacoesScreen(usuario: usuario),
           ],
         ),
       ),
