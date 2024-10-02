@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:minhas_financas_app/model/Transacao.dart';
 import 'package:minhas_financas_app/model/Usuario.dart';
 import 'package:minhas_financas_app/service/TransacaoService.dart';
-import 'package:minhas_financas_app/service/UsuarioService.dart';
 
 class ResumoTransacoesScreen extends StatefulWidget {
   final List<Transacao> transacoes;
@@ -17,7 +16,6 @@ class ResumoTransacoesScreen extends StatefulWidget {
 
 class _ResumoTransacoesScreenState extends State<ResumoTransacoesScreen> {
   final TransacaoService transacaoService = TransacaoService();
-  final UsuarioService usuarioService = UsuarioService();
   final DateTime hoje = DateTime.now();
   List<Transacao> transacoesHoje = [];
 
@@ -79,7 +77,9 @@ class _ResumoTransacoesScreenState extends State<ResumoTransacoesScreen> {
                     margin: const EdgeInsets.symmetric(vertical: 8.0),
                     child: ListTile(
                       leading: Icon(
-                        transacao.tipo == 'Crédito'
+                        transacao.compartilhada
+                            ? Icons.person_add_sharp
+                            : transacao.tipo == 'Crédito'
                             ? Icons.arrow_downward
                             : Icons.arrow_upward,
                         color: transacao.tipo == 'Crédito' ? Colors.green : Colors.red,

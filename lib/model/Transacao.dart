@@ -24,6 +24,7 @@ class Transacao {
       'data': data,
       'motivo': motivo,
       'usuarioId': usuarioId,
+      'compartilhada': compartilhada,
     };
   }
 

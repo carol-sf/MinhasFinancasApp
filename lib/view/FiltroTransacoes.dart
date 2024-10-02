@@ -1,51 +1,43 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:minhas_financas_app/model/RelatorioTransacoes.dart';
 import 'package:minhas_financas_app/model/Transacao.dart';
+import 'package:minhas_financas_app/model/Usuario.dart';
+import 'package:minhas_financas_app/service/TransacaoService.dart';
+import 'package:minhas_financas_app/utils/StringExtension.dart';
 
 class FiltroTransacoesScreen extends StatefulWidget {
   final List<Transacao> transacoes;
+  final Usuario usuario;
 
-  FiltroTransacoesScreen({required this.transacoes});
+  FiltroTransacoesScreen({required this.transacoes, required this.usuario});
 
   @override
   _FiltroTransacoesScreenState createState() => _FiltroTransacoesScreenState();
 }
 
 class _FiltroTransacoesScreenState extends State<FiltroTransacoesScreen> {
+  final TransacaoService transacaoService = TransacaoService();
   DateTime _dataSelecionada = DateTime.now();
-  List<Transacao> _transacoesFiltradas = [];
+  RelatorioTransacoes _relatorio = RelatorioTransacoes(
+    transacoes: [],
+    creditoTotal: 0,
+    debitoTotal: 0,
+  );
 
   @override
   void initState() {
     super.initState();
     _filtrarTransacoes();
-    atualizarLista();
-  }
-
-  Future atualizarLista() async {
-    FirebaseFirestore db = FirebaseFirestore.instance;
-    QuerySnapshot querySnapshot;
-
-    querySnapshot = await db.collection('contas').get();
-
-    if(querySnapshot.docs.isNotEmpty) {
-      for(var doc in querySnapshot.docs.toList()) {
-        print(doc['usuario']);
-        setState(() { });
-      }
-    }
-
   }
 
   void _filtrarTransacoes() {
-    setState(() {
-      _transacoesFiltradas = widget.transacoes
-          .where((transacao) =>
-              transacao.data.year == _dataSelecionada.year &&
-              transacao.data.month == _dataSelecionada.month &&
-              transacao.data.day == _dataSelecionada.day)
-          .toList();
+    transacaoService
+        .listarPorUsuarioEData(widget.usuario.id, _dataSelecionada)
+        .then((relatorio) {
+      setState(() {
+        _relatorio = relatorio;
+      });
     });
   }
 
@@ -59,7 +51,8 @@ class _FiltroTransacoesScreenState extends State<FiltroTransacoesScreen> {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: const ColorScheme.light(primary: Color(0xFF6200EE)),
-            buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary),
+            buttonTheme:
+                const ButtonThemeData(textTheme: ButtonTextTheme.primary),
           ),
           child: child!,
         );
@@ -75,13 +68,6 @@ class _FiltroTransacoesScreenState extends State<FiltroTransacoesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final totalCredito = _transacoesFiltradas
-        .where((transacao) => transacao.tipo == 'Crédito')
-        .fold(0.0, (sum, transacao) => sum + transacao.valor);
-    final totalDebito = _transacoesFiltradas
-        .where((transacao) => transacao.tipo == 'Débito')
-        .fold(0.0, (sum, transacao) => sum + transacao.valor);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -116,7 +102,7 @@ class _FiltroTransacoesScreenState extends State<FiltroTransacoesScreen> {
             const SizedBox(height: 20.0),
             Text(
               'Transações no dia ${DateFormat('dd/MM/yyyy').format(_dataSelecionada)}',
-              style: const  TextStyle(
+              style: const TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,
                 color: const Color.fromARGB(255, 88, 13, 219),
@@ -125,22 +111,24 @@ class _FiltroTransacoesScreenState extends State<FiltroTransacoesScreen> {
             const SizedBox(height: 20.0),
             Expanded(
               child: ListView.builder(
-                itemCount: _transacoesFiltradas.length,
+                itemCount: _relatorio.transacoes.length,
                 itemBuilder: (context, index) {
-                  final transacao = _transacoesFiltradas[index];
+                  final transacao = _relatorio.transacoes[index];
                   return Card(
                     elevation: 4.0,
-                    margin: const  EdgeInsets.symmetric(vertical: 8.0),
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
                     child: ListTile(
                       leading: Icon(
-                        transacao.tipo == 'Crédito'
-                            ? Icons.arrow_downward
-                            : Icons.arrow_upward,
+                        transacao.compartilhada
+                            ? Icons.person_add_sharp
+                            : transacao.tipo == 'Crédito'
+                                ? Icons.arrow_downward
+                                : Icons.arrow_upward,
                         color: transacao.tipo == 'Crédito'
                             ? Colors.green
                             : Colors.red,
                       ),
-                      title:  Text(
+                      title: Text(
                         '${transacao.motivo} - R\$ ${transacao.valor.toStringAsFixed(2)}',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
@@ -157,7 +145,7 @@ class _FiltroTransacoesScreenState extends State<FiltroTransacoesScreen> {
             ),
             const SizedBox(height: 20.0),
             Text(
-              'Total Crédito: R\$ ${totalCredito.toStringAsFixed(2)}',
+              'Total Crédito: ${_relatorio.creditoTotal.toString().toFormattedBrlCurrency()}',
               style: const TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
@@ -165,7 +153,7 @@ class _FiltroTransacoesScreenState extends State<FiltroTransacoesScreen> {
               ),
             ),
             Text(
-              'Total Débito: R\$ ${totalDebito.toStringAsFixed(2)}',
+              'Total Débito: ${_relatorio.debitoTotal.toString().toFormattedBrlCurrency()}',
               style: const TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,

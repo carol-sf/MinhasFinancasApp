@@ -55,7 +55,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
             ResumoTransacoesScreen(usuario: usuario, transacoes: widget.transacoes),
             RegistroTransacaoScreen(
                 usuario: usuario, onNovaTransacao: _adicionarTransacao),
-            FiltroTransacoesScreen(transacoes: widget.transacoes),
+            FiltroTransacoesScreen(usuario: usuario, transacoes: widget.transacoes),
           ],
         ),
       ),
