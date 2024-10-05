@@ -12,7 +12,7 @@ class UsuarioService {
       DocumentReference docRef = await colecaoUsuarios.add(usuario.toMap());
       DocumentSnapshot usuarioDoc = await docRef.get();
       if(usuarioDoc.exists) {
-        Usuario usuario = Usuario.fromMap(usuarioDoc as Map<String, dynamic>, usuarioDoc.id);
+        Usuario usuario = Usuario.fromMap(usuarioDoc.data() as Map<String, dynamic>, usuarioDoc.id);
         return usuario;
       } else {
         print('Erro ao buscar usuario criado');
