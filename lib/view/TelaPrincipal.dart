@@ -4,27 +4,10 @@ import 'package:minhas_financas_app/view/FiltroTransacoes.dart';
 import 'package:minhas_financas_app/view/RegistroTransacoes.dart';
 import 'package:minhas_financas_app/view/ResumoTransacoes.dart';
 
-class TelaPrincipal extends StatefulWidget {
+class TelaPrincipal extends StatelessWidget {
+  const TelaPrincipal({super.key, required this.usuario});
 
-  const TelaPrincipal({Key? key}) : super(key: key);
-
-  @override
-  _TelaPrincipalState createState() => _TelaPrincipalState();
-}
-
-class _TelaPrincipalState extends State<TelaPrincipal> {
-  late Usuario usuario;
-
-  @override
-  void initState() {
-    super.initState();
-    usuario = Usuario(
-      id: 'CuT3GhBXziCZ1hbmeNwa',
-      email: 'Anna Carolina',
-      creditoTotal: 2000,
-      debitoTotal: 0,
-    );
-  }
+  final Usuario usuario;
 
   @override
   Widget build(BuildContext context) {

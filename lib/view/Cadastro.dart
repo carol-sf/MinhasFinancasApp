@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:minhas_financas_app/model/Usuario.dart';
 import 'package:minhas_financas_app/service/AuthenticationHelper.dart';
+import 'package:minhas_financas_app/service/UsuarioService.dart';
 import 'package:minhas_financas_app/view/Login.dart';
 import 'package:minhas_financas_app/view/TelaPrincipal.dart';
 
@@ -99,13 +101,22 @@ class _CadastroScreenState extends State<CadastroScreen> {
                           .signUp(email: _emailController.text, password: _senhaController.text)
                           .then((result) {
                         if (result == null) {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const TelaPrincipal()));
+                          UsuarioService().registrar(Usuario(id: '', email: _emailController.text)).then((usuario) {
+                            if(usuario is Usuario) {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => TelaPrincipal(usuario: usuario,)));
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                content: Text(
+                                  'Usuario não encontrado',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ));
+                            }
+                          });
                         } else {
-                          print('Deu erro');
-                          print(result);
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text(
                               AuthenticationHelper().traduzirRetorno(result),

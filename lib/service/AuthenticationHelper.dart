@@ -1,6 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:minhas_financas_app/model/Usuario.dart';
-import 'package:minhas_financas_app/service/UsuarioService.dart';
 
 class AuthenticationHelper {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -10,7 +8,6 @@ class AuthenticationHelper {
   Future<String?> signUp(
       {required String email, required String password}) async {
     try {
-      UsuarioService().registrar(Usuario(id: '', email: email));
       await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,

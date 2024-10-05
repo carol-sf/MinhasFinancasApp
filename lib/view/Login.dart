@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:minhas_financas_app/model/DadosLogin.dart';
+import 'package:minhas_financas_app/model/Usuario.dart';
 import 'package:minhas_financas_app/service/AuthenticationHelper.dart';
+import 'package:minhas_financas_app/service/UsuarioService.dart';
 import 'package:minhas_financas_app/view/Cadastro.dart';
 import 'package:minhas_financas_app/view/TelaPrincipal.dart';
 
@@ -100,15 +102,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     AuthenticationHelper()
                         .signIn(
-                        email: _dadosLogin.email,
-                        password: _dadosLogin.senha)
+                            email: _dadosLogin.email,
+                            password: _dadosLogin.senha)
                         .then((result) {
                       print(result);
                       if (result == null) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const TelaPrincipal()));
+                        UsuarioService()
+                            .buscarPorEmail(_dadosLogin.email)
+                            .then((usuario) {
+                          if (usuario is Usuario) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    TelaPrincipal(usuario: usuario),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              content: Text(
+                                'Erro ao tentar logar',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ));
+                          }
+                        });
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text(
