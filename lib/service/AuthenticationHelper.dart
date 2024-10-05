@@ -1,4 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:minhas_financas_app/model/Usuario.dart';
+import 'package:minhas_financas_app/service/UsuarioService.dart';
 
 class AuthenticationHelper {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -8,12 +10,15 @@ class AuthenticationHelper {
   Future<String?> signUp(
       {required String email, required String password}) async {
     try {
+      UsuarioService().registrar(Usuario(id: '', email: email));
       await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      print('Passou!!');
       return null;
     } on FirebaseAuthException catch (e) {
+      print('Erro do firebase');
       print(e);
       return e.message;
     } catch (e) {
@@ -32,6 +37,9 @@ class AuthenticationHelper {
       return null;
     } on FirebaseAuthException catch (e) {
       return e.message;
+    } catch(e) {
+      print('Erro inesperado ao tentar realizar login: $e');
+      return null;
     }
   }
 

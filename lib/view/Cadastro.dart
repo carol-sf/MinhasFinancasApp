@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:minhas_financas_app/main.dart';
 import 'package:minhas_financas_app/service/AuthenticationHelper.dart';
+import 'package:minhas_financas_app/view/Login.dart';
 import 'package:minhas_financas_app/view/TelaPrincipal.dart';
 
 class CadastroScreen extends StatefulWidget {
@@ -104,6 +104,8 @@ class _CadastroScreenState extends State<CadastroScreen> {
                               MaterialPageRoute(
                                   builder: (context) => const TelaPrincipal()));
                         } else {
+                          print('Deu erro');
+                          print(result);
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text(
                               AuthenticationHelper().traduzirRetorno(result),
@@ -120,7 +122,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const LoginPage()));
+                            builder: (context) => const LoginScreen()));
                   },
                   child: const Text('Já tenho uma conta.'),
                 ),

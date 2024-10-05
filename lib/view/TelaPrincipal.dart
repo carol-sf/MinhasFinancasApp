@@ -21,7 +21,6 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
     usuario = Usuario(
       id: 'CuT3GhBXziCZ1hbmeNwa',
       email: 'Anna Carolina',
-      senha: '123',
       creditoTotal: 2000,
       debitoTotal: 0,
     );
