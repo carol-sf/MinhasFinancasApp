@@ -77,6 +77,7 @@ class _FiltroTransacoesScreenState extends State<FiltroTransacoesScreen> {
         ),
         backgroundColor: const Color.fromARGB(255, 88, 13, 219),
         centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
