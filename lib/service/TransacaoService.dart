@@ -9,6 +9,19 @@ class TransacaoService {
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   Participacao calcularParticipacao(double valorTotal, Usuario usuario, Usuario colaborador) {
+  // Verifica se o crédito de algum dos usuários é zero
+  if (usuario.creditoTotal == 0 || colaborador.creditoTotal == 0) {
+    double parteIgual = valorTotal / 2;
+
+    return Participacao(
+      idUsuario: usuario.id,
+      nomeUsuario: usuario.email,
+      parteUsuario: parteIgual,
+      idColaborador: colaborador.id,
+      nomeColaborador: colaborador.email,
+      parteColaborador: parteIgual,
+    );
+  } else {
     double somaSalarios = usuario.creditoTotal + colaborador.creditoTotal;
     double porcentagemUsuario = usuario.creditoTotal / somaSalarios;
     double parteUsuario = valorTotal * porcentagemUsuario;
@@ -23,6 +36,8 @@ class TransacaoService {
       parteColaborador: parteColaborador,
     );
   }
+}
+
 
   registrar(Transacao transacao) async {
     try {

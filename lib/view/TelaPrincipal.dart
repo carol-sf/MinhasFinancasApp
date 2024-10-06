@@ -5,6 +5,7 @@ import 'package:minhas_financas_app/view/FiltroTransacoes.dart';
 import 'package:minhas_financas_app/view/Login.dart';
 import 'package:minhas_financas_app/view/RegistroTransacoes.dart';
 import 'package:minhas_financas_app/view/ResumoTransacoes.dart';
+import 'package:minhas_financas_app/view/PerfilUsuario.dart';
 
 class TelaPrincipal extends StatelessWidget {
   const TelaPrincipal({super.key, required this.usuario});
@@ -17,7 +18,27 @@ class TelaPrincipal extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Minhas Finanças"),
+          title: Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  // Navegar para a tela de perfil
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PerfilUsuarioScreen(usuario: usuario),
+                    ),
+                  );
+                },
+                child: const CircleAvatar(
+                  radius: 15,
+                  backgroundImage: AssetImage('assets/user_icon.png'), // Substitua com a imagem do ícone de usuário
+                ),
+              ),
+              const SizedBox(width: 10),
+              const Text("Minhas Finanças"),
+            ],
+          ),
           automaticallyImplyLeading: false,
           bottom: const TabBar(
             tabs: [
@@ -34,7 +55,7 @@ class TelaPrincipal extends StatelessWidget {
                     .signOut()
                     .then((_) => Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (contex) => const LoginScreen()),
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
                 ));
               },
             ),

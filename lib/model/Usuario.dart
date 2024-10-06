@@ -4,6 +4,7 @@ class Usuario {
   final double creditoTotal;
   final double debitoTotal;
 
+
   Usuario({
     required this.id,
     required this.email,

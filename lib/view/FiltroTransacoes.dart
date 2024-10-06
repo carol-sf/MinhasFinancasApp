@@ -8,7 +8,7 @@ import 'package:minhas_financas_app/utils/StringExtension.dart';
 class FiltroTransacoesScreen extends StatefulWidget {
   final Usuario usuario;
 
-  FiltroTransacoesScreen({required this.usuario});
+  const FiltroTransacoesScreen({super.key, required this.usuario});
 
   @override
   _FiltroTransacoesScreenState createState() => _FiltroTransacoesScreenState();
@@ -104,7 +104,7 @@ class _FiltroTransacoesScreenState extends State<FiltroTransacoesScreen> {
               style: const TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,
-                color: const Color.fromARGB(255, 88, 13, 219),
+                color: Color.fromARGB(255, 88, 13, 219),
               ),
             ),
             const SizedBox(height: 20.0),

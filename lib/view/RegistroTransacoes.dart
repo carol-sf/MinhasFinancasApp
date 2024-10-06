@@ -241,7 +241,7 @@ class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
                   if (_formKey.currentState?.validate() ?? false) {
                     double valorTransacao = double.parse(_valorController.text);
                     bool compartilhada = _usuarioSelecionado != null;
-                    if (compartilhada && _tipo == 'Débito' && _participacao != null) {
+                    if (compartilhada && _participacao != null) {
                       valorTransacao = _participacao!.parteUsuario;
                       final transacaoColaborador = Transacao(
                         valor: _participacao!.parteColaborador,
@@ -252,7 +252,9 @@ class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
                         compartilhada: compartilhada,
                       );
                       transacaoService.registrar(transacaoColaborador);
+                      _mostrarMensagemSucesso(transacaoColaborador);
                     }
+                    
                     final transacaoUsuario = Transacao(
                       valor: valorTransacao,
                       tipo: _tipo,
@@ -262,7 +264,7 @@ class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
                       compartilhada: compartilhada,
                     );
                     transacaoService.registrar(transacaoUsuario);
-
+                    
                     _mostrarMensagemSucesso(transacaoUsuario);
                     _limparFormulario();
                   }
