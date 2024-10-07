@@ -3,31 +3,43 @@ import 'package:intl/intl.dart';
 import 'package:minhas_financas_app/model/Transacao.dart';
 import 'package:minhas_financas_app/model/Usuario.dart';
 import 'package:minhas_financas_app/service/TransacaoService.dart';
+import 'package:minhas_financas_app/service/UsuarioService.dart';
 
 class ResumoTransacoesScreen extends StatefulWidget {
-  final Usuario usuario;
+  final String usuarioId;
 
-  const ResumoTransacoesScreen({super.key, required this.usuario});
+  const ResumoTransacoesScreen({super.key, required this.usuarioId});
 
   @override
   State<ResumoTransacoesScreen> createState() => _ResumoTransacoesScreenState();
 }
 
 class _ResumoTransacoesScreenState extends State<ResumoTransacoesScreen> {
-  final TransacaoService transacaoService = TransacaoService();
   final DateTime hoje = DateTime.now();
+  Usuario? usuario;
   List<Transacao> transacoesHoje = [];
+  double saldoTotal = 0;
 
   @override
   void initState() {
     super.initState();
     _carregarTransacoes();
+    _carregarUsuario();
   }
 
   _carregarTransacoes() {
-    transacaoService.listarPorUsuarioEData(widget.usuario.id, hoje).then((relatorio) {
+    TransacaoService().listarPorUsuarioEData(widget.usuarioId, hoje).then((relatorio) {
       setState(() {
         transacoesHoje = relatorio.transacoes;
+      });
+    });
+  }
+
+  _carregarUsuario() {
+    UsuarioService().buscarPorId(widget.usuarioId).then((result) {
+      setState(() {
+        usuario = result;
+        saldoTotal = (usuario?.creditoTotal ?? 0) - (usuario?.debitoTotal ?? 0);
       });
     });
   }
@@ -101,7 +113,7 @@ class _ResumoTransacoesScreenState extends State<ResumoTransacoesScreen> {
             ),
             const SizedBox(height: 20.0),
             Text(
-              'Total Crédito: R\$ ${widget.usuario.creditoTotal.toStringAsFixed(2)}',
+              'Total Crédito: R\$ ${usuario?.creditoTotal.toStringAsFixed(2) ?? 0}',
               style: const TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
@@ -109,11 +121,18 @@ class _ResumoTransacoesScreenState extends State<ResumoTransacoesScreen> {
               ),
             ),
             Text(
-              'Total Débito: R\$ ${widget.usuario.debitoTotal.toStringAsFixed(2)}',
+              'Total Débito: R\$ ${usuario?.debitoTotal.toStringAsFixed(2) ?? 0}',
               style: const TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
                 color: Colors.red,
+              ),
+            ),
+            Text(
+              'Saldo Total: R\$ ${saldoTotal.toStringAsFixed(2)}',
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],

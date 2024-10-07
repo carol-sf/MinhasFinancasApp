@@ -39,6 +39,7 @@ class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
     'Internet',
     'Lazer',
     'Alimentação',
+    'Salário',
     'Outros'
   ];
 
@@ -287,7 +288,7 @@ class _RegistroTransacaoScreenState extends State<RegistroTransacaoScreen> {
   _mostrarMensagemSucesso(Transacao transacao) {
     final snackBar = SnackBar(
       content: Text(
-        'A transação número ${transacao.id}, no valor de R\$${transacao.valor} foi salva com sucesso!',
+        'A transação no valor de R\$${transacao.valor} foi salva com sucesso!',
       ),
       duration: const Duration(seconds: 2),
     );

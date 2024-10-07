@@ -32,7 +32,8 @@ class TelaPrincipal extends StatelessWidget {
                 },
                 child: const CircleAvatar(
                   radius: 15,
-                  backgroundImage: AssetImage('assets/user_icon.png'), // Substitua com a imagem do ícone de usuário
+                  backgroundColor: Color(0xFF481791),
+                  child: Icon(Icons.person, color: Colors.white, size: 18,),
                 ),
               ),
               const SizedBox(width: 10),
@@ -63,7 +64,7 @@ class TelaPrincipal extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            ResumoTransacoesScreen(usuario: usuario),
+            ResumoTransacoesScreen(usuarioId: usuario.id),
             RegistroTransacaoScreen(usuario: usuario),
             FiltroTransacoesScreen(usuario: usuario),
           ],
